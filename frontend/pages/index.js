@@ -1,11 +1,12 @@
 import { useState } from "react";
 import { useRouter } from "next/router";
+import { authService } from "../src/services/auth/authService";
 
 export default function HomeScreen() {
   const router = useRouter();
   const [values, setValues] = useState({
-    usuario: 'emarshall',
-    senha: 'verde1',
+    usuario: 'omariosouto',
+    senha: 'safepassword',
   })
 
   function handleChange(event) {
@@ -14,19 +15,29 @@ export default function HomeScreen() {
     setValues((currentValues) => {
       return {
         ...currentValues,
-        [fieldName]: fieldValue
-      }
+        [fieldName]: fieldValue,
+      };
     })
   }
-
 
   return (
     <div>
       <h1>Login</h1>
       <form onSubmit={(event) => {
+        // onSubmit -> controller (pega dados do usuário e envia para um serviço)
+        // authService -> Serviço 
         event.preventDefault();
-
-        router.push('/auth-page-ssr')
+        authService
+        .login({
+          username: values.usuario,
+          password: values.senha,
+        })
+        .then(() => {
+          router.push('/auth-page-ssr')
+        })
+        .catch((error) => {
+          alert(error.message);
+        })
       }}>
         <input
           placeholder="Usuário" name="usuario"
@@ -38,9 +49,9 @@ export default function HomeScreen() {
           value={values.senha}
           onChange={handleChange}
         />
-        {/* <pre>
+        <pre>
           {JSON.stringify(values, null, 2)}
-        </pre> */}
+        </pre>
         <div>
           <button>
             Entrar
