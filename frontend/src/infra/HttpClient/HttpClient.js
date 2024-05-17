@@ -2,13 +2,14 @@ import nookies from 'nookies';
 
 // Arquitatura Hexagonal
 // Ports & Adapters
-export async function HttpClient(fetchUrl, fetchOptions) {
+export async function HttpClient(fetchUrl, fetchOptions = {}) {
 
+  const defaultHeaders = fetchOptions.headers || {};
   const options = {
     ...fetchOptions,
     headers: {
       'Content-type': 'application/json',
-      ...fetchOptions.headers,
+      defaultHeaders,
     },
     body: fetchOptions.body ? JSON.stringify(fetchOptions.body) : null,
   }

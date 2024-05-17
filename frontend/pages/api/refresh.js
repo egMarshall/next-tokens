@@ -46,8 +46,20 @@ const controllers = {
         message: 'Não autorizado',
       })
     }
+  },
+  async deleteTokens(request, response) {
+    const ctx = { request, response };
+    nookies.destroy(ctx, REFRESH_TOKEN, {
+      httpOnly: true,
+      sameSite: 'lax',
+      path: '/',
+    });
 
-
+    response.status(200).json({
+      data: {
+        message: 'Token removido com sucesso!'
+      }
+    })
   }
 }
 
@@ -55,6 +67,7 @@ const controllerBy = {
   POST: controllers.storeRefreshToken,
   GET: controllers.regenerateTokens,
   PUT: controllers.regenerateTokens,
+  DELETE: controllers.deleteTokens,
 }
 
 export default function handler(request, response) {
