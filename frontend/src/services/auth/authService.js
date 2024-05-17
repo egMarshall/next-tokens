@@ -10,9 +10,18 @@ export const authService = {
     .then(async (response) => {
       if(!response.ok) throw new Error('Usuário ou senha inválidos!')
       const body = response.body;
-      console.log(body);
 
       tokenService.save(body.data.access_token);
+
+      return body;
+    })
+    .then(async ({ data }) => {
+      const { refresh_token } = data;
+
+      const response = await HttpClient('/api/refresh', {
+        method: 'POST',
+        body: { refresh_token }
+      });
     })
   },
   
@@ -23,6 +32,8 @@ export const authService = {
       headers: {
         'Authorization': `Bearer ${token}`
       },
+      ctx,
+      refresh: true,
     })
     .then(async (response) => {
       if (!response.ok) throw new Error('Não foi possível obter a sessão do usuário!')
